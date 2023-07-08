@@ -1,8 +1,6 @@
 provider "google" {
   credentials = file("/home/luhurfatah/Files/skripsi/keys/skripsi-392008-629bb9a3e85d.json")
   project     = "skripsi-392008"
-  region      = "us-east1"
-  zone        = "us-east1-b"
 }
 
 resource "google_compute_network" "vpc_network" {
@@ -11,26 +9,27 @@ resource "google_compute_network" "vpc_network" {
   project                 = "skripsi-392008"
 }
 
-resource "google_compute_subnetwork" "openstack" {
-  name          = "openstack"
+resource "google_compute_subnetwork" "east1" {
+  name          = "east1"
   ip_cidr_range = "10.10.10.0/24"
   region        = "us-east1"
   network       = google_compute_network.vpc_network.id
 }
 
-resource "google_compute_subnetwork" "ceph" {
-  name          = "ceph"
+resource "google_compute_subnetwork" "west4" {
+  name          = "west4"
   ip_cidr_range = "10.10.20.0/24"
-  region        = "us-east1"
+  region        = "us-west4"
   network       = google_compute_network.vpc_network.id
 }
 
-resource "google_compute_subnetwork" "glusterfs" {
-  name          = "glusterfs"
+resource "google_compute_subnetwork" "central1" {
+  name          = "central1"
   ip_cidr_range = "10.10.30.0/24"
-  region        = "us-east1"
+  region        = "us-central1"
   network       = google_compute_network.vpc_network.id
 }
+
 
 resource "google_compute_firewall" "allow-ssh" {
   name    = "allow-ssh"
@@ -65,40 +64,47 @@ module "openstack-address" {
   source     = "terraform-google-modules/address/google"
   version    = "~> 3.1"
   project_id = "skripsi-392008"
-  region     = "us-east1"
-  subnetwork = "openstack"
-  names      = ["controller", "openstack-compute1", "openstack-compute2"]
-  addresses  = ["10.10.10.10", "10.10.10.20", "10.10.10.30"]
+  region     = "us-central1"
+  subnetwork = "central1"
+  names      = ["openstack-node1", "openstack-node2"]
+  addresses  = ["10.10.30.10", "10.10.30.11"]
   depends_on = [
     google_compute_network.vpc_network,
-    google_compute_subnetwork.openstack
+    google_compute_subnetwork.east1,
+    google_compute_subnetwork.west4,
+    google_compute_subnetwork.central1,
   ]
 }
 
-module "ceph-address" {
+module "east1-address" {
   source     = "terraform-google-modules/address/google"
   version    = "~> 3.1"
   project_id = "skripsi-392008"
   region     = "us-east1"
-  subnetwork = "ceph"
-  names      = ["ceph-node1", "ceph-node2"]
-  addresses  = ["10.10.20.10", "10.10.20.20"]
+  subnetwork = "east1"
+  names      = ["ceph-east1", "glusterfs-east1"]
+  addresses  = ["10.10.10.20", "10.10.10.30"]
   depends_on = [
     google_compute_network.vpc_network,
-    google_compute_subnetwork.ceph
+    google_compute_subnetwork.east1,
+    google_compute_subnetwork.west4,
+    google_compute_subnetwork.central1,
   ]
 }
 
-module "glusterfs-address" {
+module "west4-address" {
   source     = "terraform-google-modules/address/google"
   version    = "~> 3.1"
   project_id = "skripsi-392008"
-  region     = "us-east1"
-  subnetwork = "glusterfs"
-  names      = ["glusterfs-node1", "glusterfs-node2"]
-  addresses  = ["10.10.30.10", "10.10.30.20"]
+  region     = "us-west4"
+  subnetwork = "west4"
+  names      = ["ceph-west4", "glusterfs-west4"]
+  addresses  = ["10.10.20.20", "10.10.20.30"]
   depends_on = [
     google_compute_network.vpc_network,
-    google_compute_subnetwork.glusterfs
+    google_compute_subnetwork.east1,
+    google_compute_subnetwork.west4,
+    google_compute_subnetwork.central1,
   ]
 }
+
