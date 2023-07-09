@@ -7,6 +7,7 @@ resource "google_compute_network" "vpc_network" {
   name                    = "internal-network"
   auto_create_subnetworks = false
   project                 = "skripsi-392008"
+  mtu                     = 8896
 }
 
 resource "google_compute_subnetwork" "east1" {
