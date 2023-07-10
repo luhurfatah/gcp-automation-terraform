@@ -6,7 +6,7 @@ provider "google" {
 
 resource "google_compute_instance" "ceph-east1" {
   name         = "ceph-east1"
-  machine_type = "e2-highcpu-2"
+  machine_type = "e2-highmem-2"
   zone         = "us-east1-b"
 
   boot_disk {
@@ -51,7 +51,7 @@ resource "google_compute_instance" "ceph-east1" {
 
 resource "google_compute_instance" "ceph-west4" {
   name         = "ceph-west4"
-  machine_type = "e2-highcpu-2"
+  machine_type = "e2-highmem-2"
   zone         = "us-west4-b"
 
   boot_disk {

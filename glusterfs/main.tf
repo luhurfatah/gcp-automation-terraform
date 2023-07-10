@@ -5,7 +5,7 @@ provider "google" {
 
 resource "google_compute_instance" "glusterfs-east1" {
   name         = "glusterfs-east1"
-  machine_type = "e2-highcpu-4"
+  machine_type = "e2-highmem-2"
   zone         = "us-east1-b"
 
   boot_disk {
@@ -51,7 +51,7 @@ resource "google_compute_instance" "glusterfs-east1" {
 
 resource "google_compute_instance" "glusterfs-west4" {
   name         = "glusterfs-west4"
-  machine_type = "e2-highcpu-4"
+  machine_type = "e2-highmem-2"
   zone         = "us-west4-b"
 
   boot_disk {

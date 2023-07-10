@@ -9,7 +9,7 @@ resource "google_compute_disk" "openstack01_os" {
   name  = "openstack01-os"
   type  = "pd-balanced"
   zone  = "us-central1-b"
-  size  = "10"
+  size  = "100"
   image = "projects/ubuntu-os-cloud/global/images/ubuntu-2204-jammy-v20230630"
 }
 
